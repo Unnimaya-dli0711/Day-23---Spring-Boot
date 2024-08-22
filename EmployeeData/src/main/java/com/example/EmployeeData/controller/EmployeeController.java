@@ -1,8 +1,14 @@
 package com.example.EmployeeData.controller;
 
+import com.example.EmployeeData.exception.CustomException;
+import com.example.EmployeeData.exception.ResourceNotFoundException;
 import com.example.EmployeeData.model.Employee;
 import com.example.EmployeeData.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +21,19 @@ public class EmployeeController {
     EmployeeService employeeService;
 
     @PostMapping("/")
-    public void add(Employee employee){
-        employeeService.createEmployee(employee);
+    public ResponseEntity<Employee> add(@Valid @RequestBody Employee employee){
+        if (employee.getSalary() <= 0) {
+            throw new CustomException("Salary must be greater than zero");
+        }
+        Employee createdEmployee = employeeService.createEmployee(employee);
+        return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
+        //employeeService.createEmployee(employee);
     }
 
     @GetMapping("/{id}")
-    public Employee getById(@PathVariable Long id){
-        return employeeService.getEmployeeById(id);
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+        Employee employee = employeeService.getEmployeeById(id);
+        return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
     @GetMapping("/")
@@ -38,4 +50,6 @@ public class EmployeeController {
     public void deleteEmployee(@PathVariable Long id){
         employeeService.deleteEmployee(id);
     }
+
+
 }

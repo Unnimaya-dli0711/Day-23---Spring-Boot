@@ -1,11 +1,13 @@
 package com.example.EmployeeData.service;
 
+import com.example.EmployeeData.exception.ResourceNotFoundException;
 import com.example.EmployeeData.model.Employee;
 import com.example.EmployeeData.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService implements IEmployee{
@@ -14,14 +16,19 @@ public class EmployeeService implements IEmployee{
     EmployeeRepository employeeRepository;
 
     @Override
-    public void createEmployee(Employee employee){
+    public Employee createEmployee(Employee employee){
         employeeRepository.save(employee);
+        return employee;
     }
 
     @Override
     public Employee getEmployeeById(Long id){
-        return employeeRepository.findById(id).orElse(null);
-
+        Optional<Employee> employee = employeeRepository.findById(id);
+        if (employee.isPresent()) {
+            return employee.get();
+        } else {
+            throw new ResourceNotFoundException("Employee not found with id " + id);
+        }
     }
 
     @Override
