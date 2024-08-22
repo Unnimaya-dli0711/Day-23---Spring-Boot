@@ -3,12 +3,13 @@ package com.example.EmployeeData.service;
 import com.example.EmployeeData.exception.ResourceNotFoundException;
 import com.example.EmployeeData.model.Employee;
 import com.example.EmployeeData.repository.EmployeeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class EmployeeService implements IEmployee{
 
@@ -23,6 +24,7 @@ public class EmployeeService implements IEmployee{
 
     @Override
     public Employee getEmployeeById(Long id){
+        log.info("searching for employee");
         Optional<Employee> employee = employeeRepository.findById(id);
         if (employee.isPresent()) {
             return employee.get();
