@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -49,6 +51,20 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable Long id){
         employeeService.deleteEmployee(id);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestBody String file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+
+        try {
+            employeeService.processCSV(file);
+            return ResponseEntity.ok("File uploaded successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to upload file: " + e.getMessage());
+        }
     }
 
 
